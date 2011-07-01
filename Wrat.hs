@@ -1,3 +1,4 @@
+{-# LANGUAGE PatternGuards #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module Wrat where
@@ -5,6 +6,7 @@ module Wrat where
 import Control.Applicative hiding ((<$>), empty)
 import Control.Category
 import Control.Monad.Reader
+import Data.Char
 import Data.Monoid
 import Data.Record.Label
 import Language.Haskell.Exts
@@ -66,21 +68,11 @@ subLevel :: Reader Configuration a -> Reader Configuration a
 subLevel
   = local (setL topLevel False)
 
-forall :: Doc
-forall
-  = text "forall"
+forall, arrow, doubleArrow :: Doc
 
-arrow :: Doc
-arrow
-  = text "->"
-
-doubleArrow :: Doc
-doubleArrow
-  = text "=>"
-
-spaceTupled :: [Doc] -> Doc
-spaceTupled
-  = encloseSep (lparen <> space) (line <> rparen) (comma <> space)
+forall      = text "forall"
+arrow       = text "->"
+doubleArrow = text "=>"
 
 prettyToDoc :: Pretty a => a -> Doc
 prettyToDoc
@@ -124,22 +116,25 @@ prettyType t
 
 prettyDecl :: Decl -> Reader Configuration (Maybe Doc)
 prettyDecl (TypeSig _ names t)
-  = fmap (\d -> Just $ dnames <+> align (colon <> colon <+> d)) (prettyType t)
+  = fmap mkSig (prettyType t)
     where
       dnames  = fillSep $ punctuate comma (map prettyToDoc names)
+      colons  = colon <> colon
+      mkSig d = Just (dnames <+> align (colons <+> d))
 
 prettyDecl _
   = return Nothing
 
+format :: String -> String
+format s
+  | Right decl  <- parseExtendedDecl s
+  , Just d      <- runReader (prettyDecl decl) defaultConfiguration
+                = displayS (renderPretty 0.9 80 $ indent spaces d) []
+
+  | otherwise   = s
+  where
+    spaces = length (takeWhile isSpace s)
+
 main :: IO ()
 main
-  = interact handler
-    where
-      handler :: String -> String
-      handler s
-        = case parseExtendedDecl s of
-            Left err -> s
-            Right decl ->
-              case runReader (prettyDecl decl) defaultConfiguration of
-                Nothing -> s
-                Just d  -> displayS (renderPretty 0.9 80 d) []
+  = interact format
