@@ -4,6 +4,8 @@ INSTALL	= /usr/local/stow/wrat/bin
 HC			= ghc
 HFLAGS	= -main-is $(TARGET)
 
+.PHONY: all install clean reallyclean
+
 all: $(TARGET).hs
 	$(HC) $(HFLAGS) --make $(TARGET)
 
