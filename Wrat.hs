@@ -128,15 +128,36 @@ prettyDecl (TypeSig _ names t)
 prettyDecl _
   = return Nothing
 
-format :: String -> String
-format s
-  | Right decl  <- parseExtendedDecl s
-  , Just d      <- runReader (prettyDecl decl) defaultConfiguration
-                = displayS (renderPretty 0.9 80 $ indent spaces d) []
+isConstructor :: String -> Bool
+isConstructor []        = False
+isConstructor (c : _)   = isUpper c
 
-  | otherwise   = s
+toFunction, toConstructor :: String -> String
+
+toFunction []           = []
+toFunction (c : cs)     = toLower c : cs
+
+toConstructor []        = []
+toConstructor (c : cs)  = toUpper c : cs
+
+format :: String -> String
+format input
+  | Right decl <- parseExtendedDecl (toFunction input')
+  , Just d <- runReader (prettyDecl decl) defaultConfiguration
+      = let output        = flip displayS [] $
+                              renderPretty 0.9 80 $ indent space_count d
+
+            (_, output')  = span isSpace output
+
+        in  spaces ++ if is_con then toConstructor output' else output'
+
+  | otherwise
+      = input
+
   where
-    spaces = length (takeWhile isSpace s)
+    (spaces, input')  = span isSpace input
+    space_count       = length spaces
+    is_con            = isConstructor input'
 
 main :: IO ()
 main
