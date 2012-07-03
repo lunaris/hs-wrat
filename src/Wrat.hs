@@ -7,7 +7,7 @@ import Control.Applicative hiding ((<$>), empty)
 import Control.Category
 import Control.Monad.Reader
 import Data.Char
-import Data.Monoid
+import Data.Monoid hiding ((<>))
 import Language.Haskell.Exts
 import Prelude hiding ((.))
 import Text.PrettyPrint.Leijen hiding (Pretty)
