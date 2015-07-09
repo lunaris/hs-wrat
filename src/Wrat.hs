@@ -1,19 +1,19 @@
-{-# LANGUAGE PatternGuards #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module Wrat where
 
-import Control.Applicative hiding ((<$>), empty)
 import Control.Category
 import Control.Monad.Reader
 import Data.Char
-import Data.Monoid hiding ((<>))
 import Language.Haskell.Exts
-import Prelude hiding ((.))
-import Text.PrettyPrint.Leijen hiding (Pretty)
 
-import qualified Data.Label as L
-import qualified Data.Label.PureM as P
+import Control.Applicative      hiding ((<$>), empty)
+import Data.Monoid              hiding ((<>))
+import Prelude                  hiding ((.))
+import Text.PrettyPrint.Leijen  hiding (Pretty)
+
+import qualified Data.Label         as L
+import qualified Data.Label.Monadic as M
 
 data Configuration
   = Configuration { _topLevel :: Bool }
@@ -28,13 +28,14 @@ L.mkLabels [''Configuration]
 extendedParseMode :: ParseMode
 extendedParseMode
   = ParseMode { parseFilename         = ""
-              , extensions            = mostExtensions
+              , baseLanguage          = Haskell2010
+              , extensions            = map EnableExtension mostExtensions
               , ignoreLinePragmas     = False
               , ignoreLanguagePragmas = False
               , fixities              = Just baseFixities
               }
 
-mostExtensions :: [Extension]
+mostExtensions :: [KnownExtension]
 mostExtensions
   = [ Arrows
     , BangPatterns
@@ -107,7 +108,7 @@ prettyType (TyFun t1 t2) = do
   d1 <- subLevel $ prettyType t1
   d2 <- prettyType t2
 
-  top_level <- P.asks topLevel
+  top_level <- M.asks topLevel
   return $ if top_level
     then d1 <$> arrow <+> d2
     else parens (d1 <+> arrow <+> d2)
