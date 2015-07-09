@@ -1,19 +1,23 @@
-Name:               Wrat
+Name:               wrat
 Description:        A program for wrapping and pretty-printing (extended)
                     Haskell type signatures.
 
 Version:            0.0
-Cabal-version:      >= 1.8
-Build-type:         Simple
+Cabal-Version:      >= 1.10
+Build-Type:         Simple
 
 License:            AllRightsReserved
 Copyright:          Will Jones
 Homepage:           http://www.doc.ic.ac.uk/~wlj05
 
 Executable wrat
-  Build-depends:    base, fclabels >= 1.1.3, haskell-src-exts >= 1.11.1,
-                      mtl >= 2.1.1, wl-pprint >= 1.0
+  Build-Depends:    base
+                  , fclabels == 2.0.2.2
+                  , haskell-src-exts == 1.16.0.1
+                  , mtl == 2.1.3.1
+                  , wl-pprint == 1.1
 
-  Main-is:          Wrat.hs
-  Hs-source-dirs:   src
-  Ghc-options:      -main-is Wrat
+  Default-Language: Haskell2010
+  Main-Is:          Wrat.hs
+  Hs-Source-Dirs:   src
+  GHC-Options:      -main-is Wrat -O2

@@ -91,6 +91,9 @@ prettyContext :: Context -> Doc
 prettyContext []
   = empty
 
+prettyContext [a]
+  = prettyToDoc a
+
 prettyContext as
   = parens . align . fillSep . punctuate comma . map prettyToDoc $ as
 
