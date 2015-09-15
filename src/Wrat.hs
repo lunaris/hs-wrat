@@ -9,7 +9,7 @@ import Language.Haskell.Exts
 
 import Control.Applicative      hiding ((<$>), empty)
 import Data.Monoid              hiding ((<>))
-import Prelude                  hiding ((.))
+import Prelude                  hiding ((.), (<$>))
 import Text.PrettyPrint.Leijen  hiding (Pretty)
 
 import qualified Data.Label         as L
