@@ -16,4 +16,8 @@ wrapped in Haskell these days, but it still does a fairly complete job.
 
 ```
 % echo "f :: (Functor f, Monad m) => Maybe (f a) -> (a -> b) -> m (Maybe b)" | wrat
+f :: (Functor f, Monad m)
+  => Maybe (f a)
+  -> (a -> b)
+  -> m (Maybe b)
 ```
